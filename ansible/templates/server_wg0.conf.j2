@@ -1,0 +1,13 @@
+[Interface]
+PrivateKey = {{ wg_private_key_raw.stdout }}
+Address = {{ server_tunnel_ip }}
+ListenPort = {{ server_port }}
+
+# NAT routing rules to forward traffic from the RPi to the internet
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o ens5 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o ens5 -j MASQUERADE
+
+[Peer]
+# Raspberry Pi Client Configuration
+PublicKey = {{ client_pubkey }}
+AllowedIPs = {{ client_tunnel_ip }}

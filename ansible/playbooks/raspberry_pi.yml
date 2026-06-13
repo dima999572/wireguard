@@ -1,0 +1,35 @@
+---
+- hosts: vpn_client
+  become: yes
+  vars:
+    client_tunnel_ip: "10.0.0.2/24"
+    server_tunnel_ip: "10.0.0.1/32"
+    server_port: 51820
+  tasks:
+    - name: Enable IPv4 forwarding in sysctl
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+
+    - name: Get server public key and IP
+      delegate_to: localhost
+      run_once: true
+      set_fact:
+        server_pubkey: "{{ hostvars['ec2_server']['wg_public_key_raw']['stdout'] }}"
+        server_endpoint: "{{ hostvars['ec2_server']['ansible_host'] }}"
+
+    - name: Create client configuration (wg0.conf)
+      template:
+        src: ../templates/client_wg0.conf.j2
+        dest: /etc/wireguard/wg0.conf
+        mode: '0600'
+      notify: Restart WireGuard Client
+
+  handlers:
+    - name: Restart WireGuard Client
+      systemd:
+        name: wg-quick@wg0
+        state: restarted
+        enabled: yes

@@ -1,0 +1,9 @@
+---
+- name: Install WireGuard on all nodes
+  import_playbook: playbooks/common.yml
+
+- name: Configure WireGuard Server (EC2)
+  import_playbook: playbooks/ec2_server.yml
+
+- name: Configure WireGuard Client (Raspberry Pi)
+  import_playbook: playbooks/raspberry_pi.yml

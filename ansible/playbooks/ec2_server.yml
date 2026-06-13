@@ -1,0 +1,34 @@
+---
+- hosts: vpn_server
+  become: yes
+  vars:
+    server_port: 51820
+    server_tunnel_ip: "10.0.0.1/24"
+    client_tunnel_ip: "10.0.0.2/32"
+  tasks:
+    - name: Enable IPv4 forwarding in sysctl
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+        
+    - name: Get client public key
+      delegate_to: localhost
+      run_once: true
+      set_fact:
+        client_pubkey: "{{ hostvars['raspberry_pi']['wg_public_key_raw']['stdout'] }}"
+
+    - name: Create server configuration (wg0.conf)
+      template:
+        src: ../templates/server_wg0.conf.j2
+        dest: /etc/wireguard/wg0.conf
+        mode: '0600'
+      notify: Restart WireGuard
+
+  handlers:
+    - name: Restart WireGuard
+      systemd:
+        name: wg-quick@wg0
+        state: restarted
+        enabled: yes

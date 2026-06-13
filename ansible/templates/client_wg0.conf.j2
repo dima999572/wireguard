@@ -1,0 +1,15 @@
+[Interface]
+PrivateKey = {{ wg_private_key_raw.stdout }}
+Address = {{ client_tunnel_ip }}
+DNS = 1.1.1.1, 8.8.8.8
+
+# This allows the Pi to NAT traffic coming from your LAN going into the tunnel
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o %i -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o %i -j MASQUERADE
+
+[Peer]
+# EC2 Server Configuration
+PublicKey = {{ server_pubkey }}
+Endpoint = {{ server_endpoint }}:{{ server_port }}
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 25

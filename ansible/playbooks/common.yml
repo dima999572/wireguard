@@ -1,0 +1,39 @@
+---
+- name: Install and configure WireGuard
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install WireGuard and dependencies
+      apt:
+        name:
+          - wireguard
+          - resolvconf
+        state: present
+        update_cache: yes
+
+    - name: Ensure WireGuard directory exists
+      file:
+        path: /etc/wireguard
+        state: directory
+        mode: '0700'
+
+    - name: Generate WireGuard private key
+      shell: wg genkey
+      register: wg_private_key_raw
+      no_log: true
+
+    - name: Save private key to file
+      copy:
+        content: "{{ wg_private_key_raw.stdout }}"
+        dest: /etc/wireguard/private.key
+        mode: '0600'
+
+    - name: Generate WireGuard public key
+      shell: echo "{{ wg_private_key_raw.stdout }}" | wg pubkey
+      register: wg_public_key_raw
+
+    - name: Save public key to file
+      copy:
+        content: "{{ wg_public_key_raw.stdout }}"
+        dest: /etc/wireguard/public.key
+        mode: '0644'
