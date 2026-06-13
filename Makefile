@@ -81,7 +81,7 @@ deploy: tf-plan tf-apply ansible-run
 .PHONY: clean
 clean:
 	@echo "Starting full cleanup workflow..."
-	$(MAKE) ansible-teardown-pi
+	$(MAKE) ansible-teardown-client
 	$(MAKE) tf-destroy
 
 	@echo "Cleaning up local files and Docker images..."
