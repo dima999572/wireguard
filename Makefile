@@ -15,32 +15,31 @@ TF_DIR = ./terraform
 # ==============================================================================
 .PHONY: tf-init
 tf-init:
-	terraform -chdir=$(TF_DIR) init -reconfigure
+	@terraform -chdir=$(TF_DIR) init -reconfigure
 
 .PHONY: tf-plan
 tf-plan:
-	terraform -chdir=$(TF_DIR) fmt
-	terraform -chdir=$(TF_DIR) validate
-	terraform -chdir=$(TF_DIR) plan --input=false -out="terraform.tfplan"
+	@terraform -chdir=$(TF_DIR) fmt
+	@terraform -chdir=$(TF_DIR) validate
+	@terraform -chdir=$(TF_DIR) plan --input=false -out="terraform.tfplan"
 
 .PHONY: tf-plan-destroy
 tf-plan-destroy:
-	terraform -chdir=$(TF_DIR) fmt
-	terraform -chdir=$(TF_DIR) validate
-	terraform -chdir=$(TF_DIR) plan --input=false -destroy
+	@terraform -chdir=$(TF_DIR) fmt
+	@terraform -chdir=$(TF_DIR) validate
+	@terraform -chdir=$(TF_DIR) plan --input=false -destroy
 
 .PHONY: tf-apply
 tf-apply:
-	terraform -chdir=$(TF_DIR) apply "terraform.tfplan"
+	@terraform -chdir=$(TF_DIR) apply "terraform.tfplan"
 
 .PHONY: tf-destroy
 tf-destroy:
-	terraform -chdir=$(TF_DIR) destroy --auto-approve
+	@terraform -chdir=$(TF_DIR) destroy --auto-approve
 
 .PHONY: tf-output
 tf-output:
-	terraform -chdir=$(TF_DIR) output
-
+	@terraform -chdir=$(TF_DIR) output
 # ==============================================================================
 # Ansible Targets
 # ==============================================================================
