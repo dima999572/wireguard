@@ -11,5 +11,5 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -
 # EC2 Server Configuration
 PublicKey = {{ server_pubkey }}
 Endpoint = {{ server_endpoint }}:{{ server_port }}
-AllowedIPs = 0.0.0.0/0
+AllowedIPs = 172.31.0.0/16, 10.0.0.0/24
 PersistentKeepalive = 25
