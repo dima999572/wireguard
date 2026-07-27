@@ -1,0 +1,15 @@
+[Interface]
+PrivateKey = {{ wg_private_key_raw.stdout }}
+Address = {{ server_tunnel_ip }}
+ListenPort = {{ server_port }}
+
+# NAT routing rules to forward traffic from the RPi to the internet
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ vpn_server_interface }} -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ vpn_server_interface }} -j MASQUERADE
+
+{% for client in vpn_clients %}
+[Peer]
+# Name: {{ client.name }}
+PublicKey = {{ lookup('file', playbook_dir + '/../client_profiles/' + client.name + '/public.key') | trim }}
+AllowedIPs = {{ client.ip }}/32
+{% endfor %}

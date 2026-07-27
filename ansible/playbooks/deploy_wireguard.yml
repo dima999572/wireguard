@@ -1,0 +1,45 @@
+---
+- name: Install and configure WireGuard
+  hosts: vpn_server
+  become: yes
+  tasks:
+    - name: Install WireGuard and dependencies
+      apt:
+        name: 
+         - wireguard
+         - resolvconf
+        state: present
+        update_cache: yes
+
+    - name: Ensure WireGuard directory exists
+      file:
+        path: /etc/wireguard
+        state: directory
+        mode: '0700'
+      
+    - name: Check if private key exists
+      stat:
+        path: /etc/wireguard/private.key
+      register: wg_key_exists
+
+    - name: Generate WireGuard server keys
+      shell: wg genkey | tee /etc/wireguard/private.key | wg pubkey > /etc/wireguard/public.key
+      when: not wg_key_exists.stat.exists
+
+    - name: Register server private key
+      command: cat /etc/wireguard/private.key
+      register: wg_private_key_raw
+      changed_when: false
+      no_log: true
+
+    - name: Register server public key
+      command: cat /etc/wireguard/public.key
+      register: wg_public_key_raw
+      changed_when: false
+
+    - name: Enable IPv4 forwarding in sysctl
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes

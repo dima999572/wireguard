@@ -5,6 +5,8 @@
 IMAGE_NAME = ansible-wireguard-runner
 INVENTORY = hosts.ini
 PLAYBOOK = site.yml	
+SSH_DIR ?= $(USERPROFILE)/.ssh
+SSH_KEY ?= aws_ec2
 
 # Terraform Config
 TF_DIR = ./terraform
@@ -48,28 +50,29 @@ ansible-build:
 	docker build -t $(IMAGE_NAME) -f ./ansible/Dockerfile ./ansible
 
 .PHONY: ansible-run
-ansible-run:
-	MSYS_NO_PATHCONV=1 docker run --rm \
+ansible-run: ansible-build
+	@echo "Running Ansible playbooks (update ansible/hosts.ini with EC2_PUBLIC_IP and RASPBERRY_PI_IP first)..."
+	MSYS_NO_PATHCONV=1 docker run --rm -e ANSIBLE_HOST_KEY_CHECKING=False \
 		-v "$$(pwd)/ansible:/ansible"  \
-		-v "$(HOME)/.ssh:/root/.ssh" \
+		-v "$(SSH_DIR):/root/.ssh:ro" \
 		--entrypoint /bin/sh \
-		$(IMAGE_NAME) -c "chmod 600 /root/.ssh/aws_ec2 && ansible-playbook -i $(INVENTORY) $(PLAYBOOK) -vv"
+		$(IMAGE_NAME) -c "cd /ansible && test -f /root/.ssh/$(SSH_KEY) && cp /root/.ssh/$(SSH_KEY) /tmp/$(SSH_KEY) && chmod 600 /tmp/$(SSH_KEY) && ansible-playbook -i hosts.ini site.yml -vv --private-key /tmp/$(SSH_KEY)"
 
 .PHONY: ansible-ping
 ansible-ping:
-	MSYS_NO_PATHCONV=1 docker run --rm -it \
+	MSYS_NO_PATHCONV=1 docker run --rm -it -e ANSIBLE_HOST_KEY_CHECKING=False \
 		-v "$$(pwd)/ansible:/ansible" \
-		-v "$(HOME)/.ssh:/root/.ssh" \
-		--entrypoint ansible \
-		$(IMAGE_NAME) -i $(INVENTORY) all -m ping
+		-v "$(SSH_DIR):/root/.ssh:ro" \
+		--entrypoint /bin/sh \
+		$(IMAGE_NAME) -c "test -f /root/.ssh/$(SSH_KEY) && cp /root/.ssh/$(SSH_KEY) /tmp/$(SSH_KEY) && chmod 600 /tmp/$(SSH_KEY) && ansible -i $(INVENTORY) all -m ping --private-key /tmp/$(SSH_KEY)"
 
 .PHONY: ansible-teardown-client
 ansible-teardown-client:
-	MSYS_NO_PATHCONV=1 docker run --rm \
+	MSYS_NO_PATHCONV=1 docker run --rm -e ANSIBLE_HOST_KEY_CHECKING=False \
 		-v "$$(pwd)/ansible:/ansible"  \
-		-v "$(HOME)/.ssh:/root/.ssh" \
+		-v "$(SSH_DIR):/root/.ssh:ro" \
 		--entrypoint /bin/sh \
-		$(IMAGE_NAME) -c "chmod 600 /root/.ssh/aws_ec2 && ansible-playbook -i $(INVENTORY) playbooks/teardown.yml -vv"
+		$(IMAGE_NAME) -c "test -f /root/.ssh/$(SSH_KEY) && cp /root/.ssh/$(SSH_KEY) /tmp/$(SSH_KEY) && chmod 600 /tmp/$(SSH_KEY) && ansible-playbook -i $(INVENTORY) playbooks/teardown.yml -vv --private-key /tmp/$(SSH_KEY)"
 
 
 # ==============================================================================

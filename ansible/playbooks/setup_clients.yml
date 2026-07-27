@@ -1,0 +1,40 @@
+---
+- hosts: vpn_server
+  tasks:
+    - name: Ensure Client Subfolders Exist
+      delegate_to: localhost
+      file:
+        path: "{{ playbook_dir }}/../client_profiles/{{ item.name }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ vpn_clients }}"
+      when: item.type != "linux" 
+
+    - name: Generate Keys for Local Clients (Phone, Windows)
+      delegate_to: localhost
+      shell: "wg genkey | tee private.key | wg pubkey > public.key"
+      args: 
+        chdir: "{{ playbook_dir }}/../client_profiles/{{ item.name }}"
+        creates: "{{ playbook_dir }}/../client_profiles/{{ item.name }}/public.key"
+      loop: "{{ vpn_clients }}"
+      when: item.type != "linux" 
+
+    - name: Create Client Configs
+      delegate_to: localhost
+      template:
+        src: "{{ playbook_dir }}/../templates/client.conf.j2"
+        dest: "{{ playbook_dir }}/../client_profiles/{{ item.name }}/{{ item.name }}.conf"
+      loop: "{{ vpn_clients }}"
+      when: item.type != "linux" 
+      vars:
+        client_private_key: "{{ lookup('file', playbook_dir + '/../client_profiles/' + item.name + '/private.key') }}"
+        client_tunnel_ip: "{{ item.ip }}/32"
+        server_public_key: "{{ wg_public_key_raw.stdout }}"
+        server_endpoint: "{{ vpn_server_public_ip }}:{{ vpn_server_port }}"
+
+    - name: Generate QR Code for Phone Configuration
+      delegate_to: localhost
+      shell: |
+        python3 -c "import qrcode; qrcode.make(open(r'{{ playbook_dir }}/../client_profiles/{{ item.name }}/{{ item.name }}.conf', 'r', encoding='utf-8').read()).save(r'{{ playbook_dir }}/../client_profiles/{{ item.name }}/{{ item.name }}.png')"
+      loop: "{{ vpn_clients }}"
+      when: item.type == "phone"

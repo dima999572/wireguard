@@ -1,0 +1,10 @@
+vpn_server_port: 51820
+vpn_server_interface: "ens0"
+vpn_server_internal_ip: "10.0.0.1/24"
+
+client_network_interface: "wlan0"
+
+vpn_clients:
+  - { name: "raspberry_client", ip: "10.0.0.2", type: "linux" }
+  - { name: "phone_client",     ip: "10.0.0.3", type: "phone" }
+  - { name: "windows_client",   ip: "10.0.0.4", type: "windows" }
