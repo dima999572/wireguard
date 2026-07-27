@@ -1,13 +1,13 @@
 ---
-- name: Install and configure WireGuard
+- name: Install and configure WireGuard Server
   hosts: vpn_server
   become: yes
   tasks:
     - name: Install WireGuard and dependencies
       apt:
-        name: 
-         - wireguard
-         - resolvconf
+        name:
+          - wireguard
+          - resolvconf
         state: present
         update_cache: yes
 
@@ -16,7 +16,7 @@
         path: /etc/wireguard
         state: directory
         mode: '0700'
-      
+
     - name: Check if private key exists
       stat:
         path: /etc/wireguard/private.key
@@ -43,3 +43,19 @@
         value: '1'
         state: present
         reload: yes
+
+    - name: Create server configuration
+      template:
+        src: ../templates/server.conf.j2
+        dest: /etc/wireguard/wg0.conf
+      vars:
+        server_tunnel_ip: "{{ vpn_server_internal_ip }}"
+        server_port: "{{ vpn_server_port }}"
+      notify: Restart WireGuard
+
+  handlers:
+    - name: Restart WireGuard
+      systemd:
+        name: wg-quick@wg0
+        state: restarted
+        enabled: yes

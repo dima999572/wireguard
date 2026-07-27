@@ -1,11 +1,10 @@
 [Interface]
 PrivateKey = {{ client_private_key }}
 Address = {{ client_tunnel_ip }}
-DNS = 10.0.0.2
-# DNS = 1.1.1.1, 8.8.8.8
+DNS = {{ client_dns }}
 
 [Peer]
 PublicKey = {{ server_public_key }}
-Endpoint = {{ server_endpoint }}
+Endpoint = {{ server_endpoint }}:{{ vpn_server_port }}
 AllowedIPs = 10.0.0.0/24
 PersistentKeepalive = 25
