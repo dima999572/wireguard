@@ -44,6 +44,22 @@
         state: present
         reload: yes
 
+    - name: Ensure Client Subfolders Exist
+      delegate_to: localhost
+      file:
+        path: "{{ playbook_dir }}/../client_profiles/{{ item.name }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ vpn_clients }}"
+
+    - name: Generate Keys for All Clients
+      delegate_to: localhost
+      shell: "wg genkey | tee private.key | wg pubkey > public.key"
+      args:
+        chdir: "{{ playbook_dir }}/../client_profiles/{{ item.name }}"
+        creates: "{{ playbook_dir }}/../client_profiles/{{ item.name }}/public.key"
+      loop: "{{ vpn_clients }}"
+
     - name: Create server configuration
       template:
         src: ../templates/server.conf.j2
