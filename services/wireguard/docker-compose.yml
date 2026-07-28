@@ -1,0 +1,19 @@
+services:
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Warsaw
+    volumes:
+      - wireguard_config:/config
+      - /lib/modules:/lib/modules:ro
+    restart: unless-stopped
+    network_mode: "host"
+
+volumes:
+  wireguard_config:
