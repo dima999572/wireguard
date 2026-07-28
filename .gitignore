@@ -48,3 +48,7 @@ override.tf.json
 terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform,ansible
+
+# Runtime TLS certificates/keys for nginx reverse proxy
+services/wireguard/nginx/certs/*
+!services/wireguard/nginx/certs/.gitkeep
