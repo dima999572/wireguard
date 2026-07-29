@@ -1,5 +1,6 @@
 [vpn_server]
-ec2_server ansible_host=${ec2_public_ip} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/aws_ec2 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+${ec2_instance_id}
 
-[all:vars]
-ansible_python_interpreter=/usr/bin/python3
+[vpn_server:vars]
+ansible_connection=amazon.aws.aws_ssm
+ansible_aws_ssm_region=us-east-1

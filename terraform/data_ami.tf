@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 data "aws_ami" "ubuntu_24" {
   most_recent = true
   # Canonical owner ID for official Ubuntu AMIs
