@@ -66,15 +66,6 @@ ansible-ping:
 		--entrypoint /bin/sh \
 		$(IMAGE_NAME) -c "test -f /root/.ssh/$(SSH_KEY) && cp /root/.ssh/$(SSH_KEY) /tmp/$(SSH_KEY) && chmod 600 /tmp/$(SSH_KEY) && ansible -i $(INVENTORY) all -m ping --private-key /tmp/$(SSH_KEY)"
 
-.PHONY: ansible-teardown-client
-ansible-teardown-client:
-	MSYS_NO_PATHCONV=1 docker run --rm -e ANSIBLE_HOST_KEY_CHECKING=False \
-		-v "$$(pwd)/ansible:/ansible"  \
-		-v "$(SSH_DIR):/root/.ssh:ro" \
-		--entrypoint /bin/sh \
-		$(IMAGE_NAME) -c "test -f /root/.ssh/$(SSH_KEY) && cp /root/.ssh/$(SSH_KEY) /tmp/$(SSH_KEY) && chmod 600 /tmp/$(SSH_KEY) && ansible-playbook -i $(INVENTORY) playbooks/teardown.yml -vv --private-key /tmp/$(SSH_KEY)"
-
-
 # ==============================================================================
 # Combined Workflow Targets
 # ==============================================================================
