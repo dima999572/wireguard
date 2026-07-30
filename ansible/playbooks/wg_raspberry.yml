@@ -1,0 +1,6 @@
+---
+- name: Deploy WireGuard Client
+  hosts: raspberry
+  become: yes
+  roles:
+    - wg_raspberry

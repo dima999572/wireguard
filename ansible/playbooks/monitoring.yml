@@ -1,0 +1,8 @@
+---
+- name: Setup Monitoring Stack
+  hosts: raspberry
+  vars:
+    # Decrypt secrets on the fly
+    secrets: "{{ lookup('community.sops.sops', '../secrets/main.yaml') | from_yaml }}"
+  roles:
+    - monitoring

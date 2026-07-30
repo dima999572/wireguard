@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: ansible[/\\]secrets[/\\].*\.yaml$
+    age: "age1sxrnm8u2p0n8yg9xfml0p9j79phe954ju0w5l6keer2k8ulurgtqtxmjy3"

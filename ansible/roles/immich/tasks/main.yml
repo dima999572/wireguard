@@ -1,0 +1,15 @@
+---
+- name: Create monitoring directory
+  file:
+    path: /opt/monitoring
+    state: directory
+
+- name: Render Docker Compose
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/monitoring/docker-compose.yml
+
+- name: Deploy and Start Services
+  community.docker.docker_compose_v2:
+    project_src: /opt/monitoring
+    state: present

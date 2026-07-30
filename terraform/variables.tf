@@ -12,8 +12,3 @@ variable "key_name" {
   description = "Name for the AWS key pair to create"
   type        = string
 }
-
-variable "public_key_path" {
-  description = "Path to the public SSH key to upload (e.g., ./deploy_key.pub)"
-  type        = string
-}

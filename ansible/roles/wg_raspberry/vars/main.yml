@@ -1,0 +1,4 @@
+wg_stack_name: "wireguard_client"
+wg_stack_dir: "{{ pi_config_dir }}/{{ wg_stack_name }}"
+
+enable_nginx: false

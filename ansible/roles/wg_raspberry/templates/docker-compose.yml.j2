@@ -1,0 +1,26 @@
+services:
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Warsaw
+    volumes:
+      - ./wg0.conf:/config/wg0.conf:ro
+      - /lib/modules:/lib/modules:ro
+    restart: unless-stopped
+    network_mode: "host"                
+
+  {% if enable_nginx | default(false) %}
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx_reverse_proxy
+    volumes:
+      - ${NGINX_CERTS_DIR:-/etc/nginx-certs}:/etc/nginx/certs:ro
+    restart: unless-stopped
+  {% endif %}

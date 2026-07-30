@@ -1,0 +1,8 @@
+---
+- name: Generate WireGuard Profiles
+  hosts: localhost
+  vars:
+    # Decrypt secrets on the fly
+    wg_secrets: "{{ lookup('community.sops.sops', '../secrets/wg_secrets.yaml') | from_yaml }}"
+  roles:
+    - client_profiles

@@ -5,12 +5,27 @@
 IMAGE_NAME = ansible-wireguard-runner
 INVENTORY = hosts.ini
 PLAYBOOK = site.yml	
-SSH_DIR ?= $(USERPROFILE)/.ssh
-SSH_KEY ?= aws_ec2
+WINDOWS_HOME = C:/Users/Dzmitry
+AWS_DIR = $(WINDOWS_HOME)/.aws
+SSH_DIR = $(WINDOWS_HOME)/.ssh
+SOPS_DIR = $(APPDATA)/sops
 
 # Terraform Config
 TF_DIR = ./terraform
 
+# The "Base" Docker command
+DOCKER_RUN_CMD = MSYS_NO_PATHCONV=1 docker run --rm \
+    -e ANSIBLE_HOST_KEY_CHECKING=False \
+    -e ANSIBLE_ROLES_PATH=/project/ansible/roles \
+    -e SOPS_AGE_KEY_FILE=/root/.config/sops/age/keys.txt \
+    -e AWS_REGION=eu-central-1 \
+    -e AWS_DEFAULT_REGION=eu-central-1 \
+    -v "$$(pwd):/project" \
+    -v "$(SSH_DIR):/root/.ssh:ro" \
+    -v "$(SOPS_DIR):/root/.config/sops:ro" \
+    -v "$(AWS_DIR):/root/.aws:ro" \
+    --workdir /project/ansible \
+    $(IMAGE_NAME)
 
 # ==============================================================================
 # Terraform Targets
@@ -49,22 +64,21 @@ tf-output:
 ansible-build:
 	docker build -t $(IMAGE_NAME) -f ./ansible/Dockerfile ./ansible
 
-.PHONY: ansible-run
-ansible-run: ansible-build
-	@echo "Running Ansible playbooks (update ansible/hosts.ini with EC2_PUBLIC_IP and RASPBERRY_PI_IP first)..."
-	MSYS_NO_PATHCONV=1 docker run --rm -e ANSIBLE_HOST_KEY_CHECKING=False \
-		-v "$$(pwd)/ansible:/ansible"  \
-		-v "$(SSH_DIR):/root/.ssh:ro" \
-		--entrypoint /bin/sh \
-		$(IMAGE_NAME) -c "cd /ansible && test -f /root/.ssh/$(SSH_KEY) && cp /root/.ssh/$(SSH_KEY) /tmp/$(SSH_KEY) && chmod 600 /tmp/$(SSH_KEY) && ansible-playbook -i hosts.ini site.yml -vv --private-key /tmp/$(SSH_KEY)"
+.PHONY: ansible-run-all
+ansible-run-all: ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) site.yml
 
-.PHONY: ansible-ping
-ansible-ping:
-	MSYS_NO_PATHCONV=1 docker run --rm -it -e ANSIBLE_HOST_KEY_CHECKING=False \
-		-v "$$(pwd)/ansible:/ansible" \
-		-v "$(SSH_DIR):/root/.ssh:ro" \
-		--entrypoint /bin/sh \
-		$(IMAGE_NAME) -c "test -f /root/.ssh/$(SSH_KEY) && cp /root/.ssh/$(SSH_KEY) /tmp/$(SSH_KEY) && chmod 600 /tmp/$(SSH_KEY) && ansible -i $(INVENTORY) all -m ping --private-key /tmp/$(SSH_KEY)"
+.PHONY: ansible-generate-profiles
+ansible-generate-profiles: ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/generate_profiles.yml -vvv
+
+.PHONY: ansible-wg-server
+ansible-run-vpn: ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/wg_server.yml
+
+.PHONY: ansible-wg-raspberry
+ansible-wg-raspberry: ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/wg_raspberry.yml
 
 # ==============================================================================
 # Combined Workflow Targets

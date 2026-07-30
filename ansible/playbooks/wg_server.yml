@@ -1,0 +1,8 @@
+---
+- name: Configure WireGuard Server
+  hosts: vpn_server
+  become: yes
+  vars:
+    wg_secrets: "{{ lookup('community.sops.sops', '../secrets/wg_secrets.yaml') | from_yaml }}"
+  roles:
+    - wg_server

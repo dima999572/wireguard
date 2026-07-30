@@ -52,3 +52,7 @@ terraform.rc
 # Runtime TLS certificates/keys for nginx reverse proxy
 services/wireguard/nginx/certs/*
 !services/wireguard/nginx/certs/.gitkeep
+
+# Age Keys
+key.txt
+ansible/client_profiles/

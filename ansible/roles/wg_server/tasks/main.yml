@@ -1,0 +1,36 @@
+---
+- name: Install WireGuard and dependencies
+  apt:
+    name:
+      - wireguard
+      - resolvconf
+    state: present
+    update_cache: yes
+
+- name: Ensure WireGuard directory exists
+  file:
+    path: /etc/wireguard
+    state: directory
+    mode: '0700'
+
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Create server configuration
+  template:
+    src: server.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart WireGuard
+
+- name: Ensure WireGuard is started and enabled
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started

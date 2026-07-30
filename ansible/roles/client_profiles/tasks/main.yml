@@ -1,0 +1,27 @@
+---
+- name: Ensure Client Subfolders Exist Locally
+  delegate_to: localhost
+  file:
+    path: "../client_profiles/{{ item.name }}"
+    state: directory
+  loop: "{{ vpn_clients }}"
+
+- name: Create Client Configs
+  delegate_to: localhost
+  template:
+    src: "../templates/client.conf.j2"
+    dest: "../client_profiles/{{ item.name }}/{{ item.name }}.conf"
+  loop: "{{ vpn_clients }}"
+  vars:
+    client_private_key: "{{ wg_secrets.wireguard_clients[item.name].private_key }}"
+    server_public_key: "{{ wg_secrets.wireguard_server.server_public_key }}"
+    server_endpoint: "{{ hostvars[groups['vpn_server'][0]]['vpn_endpoint'] }}"
+    client_tunnel_ip: "{{ item.ip }}/32"
+    client_dns: "1.1.1.1, 8.8.8.8"
+
+- name: Generate QR Code for Phones
+  delegate_to: localhost
+  shell: |
+    python3 -c "import qrcode; qrcode.make(open(r'../client_profiles/{{ item.name }}/{{ item.name }}.conf', 'r').read()).save(r'../client_profiles/{{ item.name }}/{{ item.name }}.png')"
+  loop: "{{ vpn_clients }}"
+  when: item.type == "phone"
