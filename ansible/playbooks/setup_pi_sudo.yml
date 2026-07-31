@@ -1,0 +1,24 @@
+---
+# One-time: install passwordless sudo for PI_USER, then become no longer needs a password.
+# Usage: make ansible-setup-pi-sudo
+# You will be prompted for the Pi sudo password once.
+- import_playbook: stage_ssh_key.yml
+
+- name: Enable passwordless sudo for the Ansible user
+  hosts: raspberry
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install sudoers drop-in for passwordless become
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/ansible-{{ ansible_user }}"
+        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD:ALL\n"
+        owner: root
+        group: root
+        mode: "0440"
+        validate: "visudo -cf %s"
+
+    - name: Verify passwordless sudo works
+      ansible.builtin.command: sudo -n true
+      become: false
+      changed_when: false

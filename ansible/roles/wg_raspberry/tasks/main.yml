@@ -26,4 +26,4 @@
   community.docker.docker_compose_v2:
     project_src: "{{ wg_stack_dir }}"
     state: present
-    pull: yes 
+    pull: always 

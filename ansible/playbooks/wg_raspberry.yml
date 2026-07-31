@@ -1,4 +1,6 @@
 ---
+- import_playbook: stage_ssh_key.yml
+
 - name: Deploy WireGuard Client
   hosts: raspberry
   become: yes
