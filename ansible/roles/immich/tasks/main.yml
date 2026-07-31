@@ -1,15 +1,19 @@
 ---
 - name: Create monitoring directory
   file:
-    path: /opt/monitoring
+    path: "{{ immich_stack_dir }}"
     state: directory
 
 - name: Render Docker Compose
   template:
     src: docker-compose.yml.j2
-    dest: /opt/monitoring/docker-compose.yml
+    dest: "{{ immich_stack_dir }}/docker-compose.yml"
+  vars:
+    db_password: "{{ immich_secrets.database.db_password }}"
+    db_user: "{{ immich_secrets.database.db_usename }}"
+    db_database_name: "{{ immich_secrets.database.db_database_name }}"
 
 - name: Deploy and Start Services
   community.docker.docker_compose_v2:
-    project_src: /opt/monitoring
+    project_src: "{{ immich_stack_dir }}"
     state: present

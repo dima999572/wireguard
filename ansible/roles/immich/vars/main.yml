@@ -1,0 +1,6 @@
+immich_stack_name: "immich"
+immich_stack_dir: "{{ pi_config_dir }}/{{ immich_stack_name }}"
+
+immich_version: "v3"
+upload_location: "/srv/immich/library"
+db_data_location: "/srv/immich/postgres"

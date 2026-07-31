@@ -21,6 +21,7 @@ DOCKER_NETWORK ?=
 # The "Base" Docker command
 DOCKER_RUN_BASE = MSYS_NO_PATHCONV=1 docker run --rm \
     $(if $(DOCKER_NETWORK),--network $(DOCKER_NETWORK)) \
+	-e ANSIBLE_HOST_KEY_CHECKING=False \
     -e ANSIBLE_ROLES_PATH=/project/ansible/roles \
     -e SOPS_AGE_KEY_FILE=/root/.config/sops/age/keys.txt \
     -e PI_HOST \
@@ -94,15 +95,15 @@ ansible-wg-server: check-env ansible-build
 ansible-wg-raspberry: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/wg_raspberry.yml
 
+.PHONY: ansible-immich
+ansible-immich: check-env ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/immich.yml
+
 # One-time: prompts for the Pi sudo password and installs NOPASSWD for PI_USER.
 # After this succeeds, ansible-wg-raspberry needs only the SSH key.
 .PHONY: ansible-setup-pi-sudo
 ansible-setup-pi-sudo: check-env ansible-build
 	$(DOCKER_RUN_BASE) -it $(IMAGE_NAME) -i $(INVENTORY) playbooks/setup_pi_sudo.yml --ask-become-pass
-
-.PHONY: ansible-ping-raspberry
-ansible-ping-raspberry: check-env ansible-build
-	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/debug_raspberry.yml
 
 # ==============================================================================
 # Combined Workflow Targets

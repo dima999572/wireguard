@@ -1,0 +1,10 @@
+---
+- import_playbook: stage_ssh_key.yml
+
+- name: Configure Immich
+  hosts: raspberry
+  become: yes
+  vars:
+    immich_secrets: "{{ lookup('community.sops.sops', '../secrets/immich_secrets.yaml') | from_yaml }}"
+  roles:
+    - immich
