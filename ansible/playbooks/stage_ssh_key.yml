@@ -1,0 +1,20 @@
+---
+# The key is bind-mounted read-only at /ssh/id_key, and a bind mount from
+# Windows is world-readable, which OpenSSH refuses to use. Re-create it on the
+# control node with 0600 before any play tries to reach the Pi.
+- name: Stage the SSH key for the Raspberry Pi
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Ensure the SSH directory exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.ssh"
+        state: directory
+        mode: "0700"
+
+    - name: Install the mounted key with restrictive permissions
+      ansible.builtin.copy:
+        src: /ssh/id_key
+        dest: "{{ lookup('env', 'HOME') }}/.ssh/id_key"
+        mode: "0600"

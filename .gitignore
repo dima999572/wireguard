@@ -53,6 +53,9 @@ terraform.rc
 services/wireguard/nginx/certs/*
 !services/wireguard/nginx/certs/.gitkeep
 
+# Local machine settings (key path, Pi address)
+.env
+
 # Age Keys
 key.txt
 ansible/client_profiles/
