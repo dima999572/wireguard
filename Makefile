@@ -108,22 +108,3 @@ ansible-monitoring: check-env ansible-build
 .PHONY: ansible-setup-pi-sudo
 ansible-setup-pi-sudo: check-env ansible-build
 	$(DOCKER_RUN_BASE) -it $(IMAGE_NAME) -i $(INVENTORY) playbooks/setup_pi_sudo.yml --ask-become-pass
-
-# ==============================================================================
-# Combined Workflow Targets
-# ==============================================================================
-.PHONY: deploy
-deploy: tf-plan tf-apply ansible-run
-
-.PHONY: clean
-clean:
-	@echo "Starting full cleanup workflow..."
-	$(MAKE) ansible-teardown-client
-	$(MAKE) tf-destroy
-
-	@echo "Cleaning up local files and Docker images..."
-	docker rmi $(IMAGE_NAME) 2>/dev/null || true
-	rm -f $(TF_DIR)/terraform.tfplan
-	rm -f $(TF_DIR)/.terraform.lock.hcl
-	rm -f ./ansible/hosts.ini
-	@echo "Cleanup completed successfully."

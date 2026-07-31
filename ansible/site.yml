@@ -8,6 +8,3 @@
 # 2. Application Layer
 - import_playbook: playbooks/immich.yml
 - import_playbook: playbooks/monitoring.yml
-
-# 100. Client Layer (Local Config Generation)
-- import_playbook: playbooks/setup_clients.yml
