@@ -1,0 +1,32 @@
+---
+- name: Create monitoring directory
+  file:
+    path: "{{ monitoring_stack_dir }}"
+    state: directory
+
+- name: Copy Grafana configuration (static)
+  ansible.builtin.copy:
+    src: grafana/
+    dest: "{{ monitoring_stack_dir }}/grafana/"
+    mode: '0644'
+    directory_mode: '0755'
+
+- name: Copy Prometheus configuration (static)
+  ansible.builtin.copy:
+    src: prometheus/
+    dest: "{{ monitoring_stack_dir }}/prometheus/"
+    mode: '0644'
+    directory_mode: '0755'
+
+- name: Render Docker Compose
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ monitoring_stack_dir }}/docker-compose.yml"
+  vars:
+    gf_security_admin_user: "{{ monitoring_secrets.grafana.gf_security_admin_user }}"
+    gf_security_admin_password: "{{ monitoring_secrets.grafana.gf_security_admin_password }}"
+
+- name: Deploy and Start Services
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_stack_dir }}"
+    state: present

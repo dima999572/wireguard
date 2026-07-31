@@ -1,0 +1,2 @@
+monitoring_stack_name: "monitoring"
+monitoring_stack_dir: "{{ pi_config_dir }}/{{ monitoring_stack_name }}"

@@ -5,6 +5,6 @@
   hosts: raspberry
   vars:
     # Decrypt secrets on the fly
-    secrets: "{{ lookup('community.sops.sops', '../secrets/main.yaml') | from_yaml }}"
+    monitoring_secrets: "{{ lookup('community.sops.sops', '../secrets/monitoring_secrets.yaml') | from_yaml }}"
   roles:
     - monitoring

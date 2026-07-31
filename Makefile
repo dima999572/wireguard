@@ -99,6 +99,10 @@ ansible-wg-raspberry: check-env ansible-build
 ansible-immich: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/immich.yml
 
+.PHONY: ansible-monitoring
+ansible-monitoring: check-env ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/monitoring.yml
+
 # One-time: prompts for the Pi sudo password and installs NOPASSWD for PI_USER.
 # After this succeeds, ansible-wg-raspberry needs only the SSH key.
 .PHONY: ansible-setup-pi-sudo

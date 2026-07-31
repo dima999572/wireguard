@@ -1,5 +1,5 @@
 ---
-- name: Create monitoring directory
+- name: Create Immich directory
   file:
     path: "{{ immich_stack_dir }}"
     state: directory
