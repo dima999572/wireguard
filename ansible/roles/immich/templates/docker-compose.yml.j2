@@ -12,13 +12,15 @@ services:
       DB_USERNAME: {{ db_user }}
       DB_DATABASE_NAME: {{ db_database_name }}
     ports:
-      - '10.0.0.2:2283:2283'
+      - '{{ ts_ip }}:2283:2283'
     depends_on:
       - redis
       - database
     restart: always
     healthcheck:
       disable: false
+    networks:
+      - immich_net
 
   redis:
     container_name: immich_redis
@@ -26,6 +28,8 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
+    networks:
+      - immich_net
 
   database:
     container_name: immich_postgres
@@ -44,3 +48,9 @@ services:
     restart: always
     healthcheck:
       disable: false
+    networks:
+      - immich_net
+
+networks:
+  immich_net:
+    driver: bridge

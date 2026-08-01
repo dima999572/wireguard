@@ -13,6 +13,8 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     restart: unless-stopped
+    networks:
+      - monitoring_net
 
   grafana:
     image: grafana/grafana:12.4.6
@@ -26,10 +28,12 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
-      - "3000:3000"
+      - "{{ ts_ip }}:3000:3000"
     depends_on:
       - prometheus
     restart: unless-stopped
+    networks:
+      - monitoring_net
 
   node-exporter:
     image: prom/node-exporter:v1.12.1
@@ -45,6 +49,8 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     restart: unless-stopped
+    networks:
+      - monitoring_net
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.54.1
@@ -60,7 +66,14 @@ services:
       - /dev/disk/:/dev/disk:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
+    networks:
+      - monitoring_net
 
 volumes:
   prometheus_data:
   grafana_data:
+
+networks:
+  monitoring_net:
+    driver: bridge
+

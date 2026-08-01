@@ -4,6 +4,15 @@
     path: "{{ monitoring_stack_dir }}"
     state: directory
 
+- name: Get Tailscale IP address
+  ansible.builtin.shell: "docker exec tailscale tailscale ip -4"
+  register: ts_ip_output
+  changed_when: false
+
+- name: Set Tailscale IP fact
+  ansible.builtin.set_fact:
+    ts_ip: "{{ ts_ip_output.stdout | trim }}"
+
 - name: Copy Grafana configuration (static)
   ansible.builtin.copy:
     src: grafana/
@@ -25,6 +34,7 @@
   vars:
     gf_security_admin_user: "{{ monitoring_secrets.grafana.gf_security_admin_user }}"
     gf_security_admin_password: "{{ monitoring_secrets.grafana.gf_security_admin_password }}"
+    tailscale_ip: "{{ ts_ip }}"
 
 - name: Deploy and Start Services
   community.docker.docker_compose_v2:

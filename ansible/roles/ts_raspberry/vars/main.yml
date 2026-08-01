@@ -1,0 +1,4 @@
+ts_stack_name: "ts_client"
+ts_stack_dir: "{{ pi_config_dir }}/{{ ts_stack_name }}"
+
+ts_version: "v1.98.10"

@@ -4,14 +4,25 @@
     path: "{{ immich_stack_dir }}"
     state: directory
 
+- name: Get Tailscale IP address
+  ansible.builtin.shell: "docker exec tailscale tailscale ip -4"
+  register: ts_ip_output
+  changed_when: false
+
+- name: Set Tailscale IP fact
+  ansible.builtin.set_fact:
+    ts_ip: "{{ ts_ip_output.stdout | trim }}"
+
+
 - name: Render Docker Compose
   template:
     src: docker-compose.yml.j2
     dest: "{{ immich_stack_dir }}/docker-compose.yml"
   vars:
     db_password: "{{ immich_secrets.database.db_password }}"
-    db_user: "{{ immich_secrets.database.db_usename }}"
+    db_user: "{{ immich_secrets.database.db_username }}"
     db_database_name: "{{ immich_secrets.database.db_database_name }}"
+    ts_ip: "{{ tailscale_ip }}"
 
 - name: Deploy and Start Services
   community.docker.docker_compose_v2:

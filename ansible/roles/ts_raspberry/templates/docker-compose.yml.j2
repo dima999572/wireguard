@@ -1,0 +1,18 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:{{ ts_version }}
+    container_name: tailscale
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - TS_AUTHKEY={{ ts_auth_key }}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+      - TS_EXTRA_ARGS={{ tailscale_extra_args | default('') }}
+    volumes:
+      - {{ ts_stack_dir }}/state:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    restart: always
+    network_mode: "host"
+

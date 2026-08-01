@@ -1,0 +1,19 @@
+---
+- name: Ensure Tailscale stack directory exists
+  file:
+    path: "{{ ts_stack_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Render Docker Compose
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ ts_stack_dir }}/docker-compose.yml"
+  vars:
+    ts_auth_key: "{{ ts_secrets.tailscale.auth_key }}"
+
+- name: Deploy and Start Tailscale
+  community.docker.docker_compose_v2:
+    project_src: "{{ ts_stack_dir }}"
+    state: present
+    pull: always

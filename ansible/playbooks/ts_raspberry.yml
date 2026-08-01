@@ -1,0 +1,10 @@
+---
+- import_playbook: stage_ssh_key.yml
+
+- name: Deploy TailScale
+  hosts: raspberry
+  become: yes
+  vars:
+    ts_secrets: "{{ lookup('community.sops.sops', '../secrets/ts_secrets.yaml') | from_yaml }}"
+  roles:
+    - ts_raspberry

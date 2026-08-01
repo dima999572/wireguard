@@ -95,6 +95,10 @@ ansible-wg-server: check-env ansible-build
 ansible-wg-raspberry: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/wg_raspberry.yml
 
+.PHONY: ansible-ts-raspberry
+ansible-ts-raspberry: check-env ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/ts_raspberry.yml
+
 .PHONY: ansible-immich
 ansible-immich: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/immich.yml
