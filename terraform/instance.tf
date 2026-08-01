@@ -1,10 +1,7 @@
-resource "aws_instance" "ec2" {
-  ami                         = data.aws_ami.ubuntu_24.id
-  instance_type               = var.instance_type
-  iam_instance_profile        = aws_iam_instance_profile.ssm_core_profile.name
-  vpc_security_group_ids      = [aws_security_group.ssh.id]
-  associate_public_ip_address = true
-  tags = {
-    Name = "${var.key_name}-instance"
-  }
-}
+# resource "aws_instance" "ec2" {
+#   ami                         = data.aws_ami.ubuntu_24.id
+#   instance_type               = var.instance_type
+#   iam_instance_profile        = aws_iam_instance_profile.ssm_core_profile.name
+#   vpc_security_group_ids      = [aws_security_group.ssh.id]
+#   associate_public_ip_address = true
+# }
