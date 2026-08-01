@@ -1,0 +1,15 @@
+---
+- name: Ensure SSD TRIM timer is enabled for disk health
+  ansible.builtin.service:
+    name: fstrim.timer
+    state: started
+    enabled: yes
+
+- name: Configure Docker logging limits
+  ansible.builtin.copy:
+    src: docker-daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Docker

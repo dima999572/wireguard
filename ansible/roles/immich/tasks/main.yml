@@ -1,5 +1,39 @@
 ---
-- name: Create Immich directory
+- name: Create Immich system group
+  ansible.builtin.group:
+    name: immich
+    system: yes
+    state: present
+
+- name: Create Immich system user
+  ansible.builtin.user:
+    name: immich
+    group: immich
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+    state: present
+  register: immich_user_details
+
+- name: Set UID/GID facts
+  set_fact:
+    immich_uid: "{{ immich_user_details.uid }}"
+    immich_gid: "{{ immich_user_details.group }}"
+
+- name: Create Immich data directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "immich"
+    group: "immich"
+    mode: '0775'
+    recurse: yes
+  loop:
+    - "{{ immich_data_dir }}"
+    - "{{ immich_library_dir }}"
+    - "{{ immich_db_dir }}"
+
+- name: Create Immich stack directory
   file:
     path: "{{ immich_stack_dir }}"
     state: directory
@@ -13,6 +47,10 @@
   ansible.builtin.set_fact:
     ts_ip: "{{ ts_ip_output.stdout | trim }}"
 
+- name: Render Immich Config File
+  template:
+    src: immich-config.json.j2
+    dest: "{{ immich_stack_dir }}/immich-config.json"
 
 - name: Render Docker Compose
   template:

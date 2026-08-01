@@ -1,0 +1,7 @@
+---
+- import_playbook: stage_ssh_key.yml
+
+- name: Configure Raspberry
+  hosts: raspberry
+  roles:
+    - config_raspberry

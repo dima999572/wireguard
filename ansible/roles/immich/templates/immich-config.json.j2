@@ -1,0 +1,36 @@
+{
+  "storageTemplate": {
+    "enabled": true,
+    "template": "{% raw %}{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}{% endraw %}"
+  },
+  "trash": {
+    "enabled": true,
+    "days": 30
+  },
+  "map": {
+    "enabled": true
+  },
+  "newVersionCheck": {
+    "enabled": true
+  },
+  "job": {
+    "thumbnailGeneration": {
+      "concurrency": 2
+    },
+    "videoConversion": {
+      "concurrency": 1
+    },
+    "library": {
+      "concurrency": 2
+    }
+  },
+  "oauth": {
+    "defaultStorageQuota": 107374182400,
+    "enabled": false
+  },
+  "nightlyTasks": {
+    "enabled": true,
+    "startTime": "02:00",
+    "syncQuotaUsage": true
+  }
+}

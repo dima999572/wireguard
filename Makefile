@@ -91,6 +91,10 @@ ansible-generate-profiles: check-env ansible-build
 ansible-wg-server: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/wg_server.yml
 
+.PHONY: ansible-config-raspberry
+ansible-config-raspberry: check-env ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/config_raspberry.yml
+
 .PHONY: ansible-wg-raspberry
 ansible-wg-raspberry: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/wg_raspberry.yml
