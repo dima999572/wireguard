@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.47.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.22.0"
+    }
     b2 = {
       source  = "Backblaze/b2"
       version = "~> 0.13.2"
@@ -22,6 +26,10 @@ terraform {
 
 provider "aws" {
   region = var.region
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }
 
 provider "b2" {}
