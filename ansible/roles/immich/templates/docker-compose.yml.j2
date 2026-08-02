@@ -3,13 +3,14 @@ name: immich
 services:
   immich-server:
     container_name: immich_server
-    user: "{{ immich_uid }}:{{ immich_gid }}"
     image: ghcr.io/immich-app/immich-server:{{ immich_version }}
     volumes:
       - {{ immich_library_dir }}:/data
       - {{ immich_config_file_host }}:{{ immich_config_file_container }}:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
+      DB_HOSTNAME: database
+      REDIS_HOSTNAME: redis
       IMMICH_CONFIG_FILE: {{ immich_config_file_container }}
       DB_PASSWORD: {{ db_password }}
       DB_USERNAME: {{ db_user }}

@@ -48,9 +48,12 @@
     ts_ip: "{{ ts_ip_output.stdout | trim }}"
 
 - name: Render Immich Config File
-  template:
+  ansible.builtin.template:
     src: immich-config.json.j2
     dest: "{{ immich_stack_dir }}/immich-config.json"
+    owner: "immich"
+    group: "immich"
+    mode: '0644'
 
 - name: Render Docker Compose
   template:
