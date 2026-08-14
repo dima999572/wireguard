@@ -1,0 +1,39 @@
+#!/bin/bash
+# Environment variables for Restic and B2
+export B2_ACCOUNT_ID='{{ b2_key_id }}'
+export B2_ACCOUNT_KEY='{{ b2_key_secret }}'
+export RESTIC_REPOSITORY='b2:{{ b2_bucket_name }}:immich-repo'
+export RESTIC_PASSWORD='{{ restic_password }}'
+
+# Optimization for Raspberry Pi 5
+export GOMAXPROCS=1
+
+echo "Starting backup at $(date)"
+
+# 1. Initialize the repository if it doesn't exist
+# We check if snapshots work; if not, we init.
+restic snapshots > /dev/null 2>&1 || restic init
+
+# 2. Run the backup
+# We backup /srv/immich which contains library/ and backups/ (the DB)
+# We use nice/ionice to protect Pi performance
+nice -n 19 ionice -c 3 restic backup /srv/immich \
+    --host pi-5-immich \
+    --exclude "/srv/immich/library/thumbs" \
+    --exclude "/srv/immich/library/encoded-video" \
+    --exclude "/srv/immich/library/upload/temp" \
+    --verbose
+
+# 3. Check the exit code of the backup
+{# 
+if [ $? -eq 0 ]; then
+    echo "Backup successful. Pinging healthchecks..."
+    curl -fsS -m 10 --retry 5 {{ backups.healthchecks_url }}
+else
+    echo "Backup failed!"
+    exit 1
+fi
+#}
+
+
+echo "Backup finished at $(date)"

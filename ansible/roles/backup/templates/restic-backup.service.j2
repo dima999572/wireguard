@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily Immich Backup to Backblaze B2
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/run-restic-backup.sh
+# Security: Run as root to ensure access to all library folders
+User=root
+
+[Install]
+WantedBy=multi-user.target

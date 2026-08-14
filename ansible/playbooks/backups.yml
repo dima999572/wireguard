@@ -5,6 +5,6 @@
   hosts: raspberry
   become: yes
   vars:
-    immich_secrets: "{{ lookup('community.sops.sops', '../secrets/backup_secrets.yaml') | from_yaml }}"
+    backup_secrets: "{{ lookup('community.sops.sops', '../secrets/backup_secrets.yaml') | from_yaml }}"
   roles:
     - backup

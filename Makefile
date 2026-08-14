@@ -107,6 +107,10 @@ ansible-ts-raspberry: check-env ansible-build
 ansible-immich: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/immich.yml
 
+.PHONY: ansible-immich-backup
+ansible-immich-backup: check-env ansible-build
+	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/backups.yml
+
 .PHONY: ansible-monitoring
 ansible-monitoring: check-env ansible-build
 	$(DOCKER_RUN_CMD) -i $(INVENTORY) playbooks/monitoring.yml

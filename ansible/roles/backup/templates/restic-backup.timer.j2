@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Immich Backup daily at 3am
+
+[Timer]
+# Run at 3:00 AM every day
+OnCalendar=*-*-* 03:00:00
+# Random delay of up to 15 mins so B2 doesn't see a spike at exactly 3:00
+RandomizedDelaySec=900
+Persistent=true
+
+[Install]
+WantedBy=timers.target

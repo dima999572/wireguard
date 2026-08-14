@@ -10,6 +10,11 @@
     dest: /usr/local/bin/run-restic-backup.sh
     mode: '0700'
     owner: root
+  vars:
+    b2_key_id: "{{ backup_secrets.backups.b2_key_id }}"
+    b2_key_secret: "{{ backup_secrets.backups.b2_key_secret }}"
+    b2_bucket_name: "{{ backup_secrets.backups.b2_bucket_name }}"
+    restic_password: "{{ backup_secrets.backups.restic_password }}"
 
 - name: Create systemd service file
   template:
