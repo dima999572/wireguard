@@ -1,8 +1,8 @@
 #!/bin/bash
 # Environment variables for Restic and B2
-export B2_ACCOUNT_ID='{{ b2_key_id }}'
-export B2_ACCOUNT_KEY='{{ b2_key_secret }}'
-export RESTIC_REPOSITORY='b2:{{ b2_bucket_name }}:immich-repo'
+export AWS_ACCESS_KEY_ID='{{ b2_key_id }}'
+export AWS_SECRET_ACCESS_KEY='{{ b2_key_secret }}'
+export RESTIC_REPOSITORY='s3:s3.eu-central-003.backblazeb2.com/{{ b2_bucket_name }}/immich-repo'
 export RESTIC_PASSWORD='{{ restic_password }}'
 
 # Optimization for Raspberry Pi 5
