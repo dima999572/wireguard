@@ -27,6 +27,13 @@
     mode: '0644'
     directory_mode: '0755'
 
+- name: Copy Blackbox Exporter configuration (static)
+  ansible.builtin.copy:
+    src: blackbox/
+    dest: "{{ monitoring_stack_dir }}/blackbox/"
+    mode: '0644'
+    directory_mode: '0755'
+
 - name: Render Docker Compose
   template:
     src: docker-compose.yml.j2
