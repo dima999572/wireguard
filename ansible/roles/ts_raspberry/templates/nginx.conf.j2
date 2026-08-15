@@ -1,0 +1,11 @@
+server {
+    listen 443 ssl;
+    server_name immich.home.dima999572.com
+
+    ssl_certificate /etc/letsencrypt/live/immich.yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/immich.yourdomain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:2283;
+    }
+}
