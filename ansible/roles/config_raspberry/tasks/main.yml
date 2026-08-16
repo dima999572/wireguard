@@ -13,3 +13,7 @@
     group: root
     mode: '0644'
   notify: Restart Docker
+
+- name: Set system timezone to UTC
+  ansible.builtin.timezone:
+    name: UTC
