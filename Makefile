@@ -120,3 +120,8 @@ ansible-monitoring: check-env ansible-build
 .PHONY: ansible-setup-pi-sudo
 ansible-setup-pi-sudo: check-env ansible-build
 	$(DOCKER_RUN_BASE) -it $(IMAGE_NAME) -i $(INVENTORY) playbooks/setup_pi_sudo.yml --ask-become-pass
+
+.PHONY: b2-size-check
+b2-size-check:
+	@test -n "$(B2_BUCKET)" || { echo "B2_BUCKET is not set. Example: B2_BUCKET=YOUR_B2_BUCKET_NAME make b2-size-check"; exit 1; }
+	@./scripts/b2_size_check.sh
