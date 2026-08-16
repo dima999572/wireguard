@@ -28,8 +28,8 @@ scrape_configs:
       module: [icmp]
     static_configs:
       - targets:
-          - 1.1.1.1
           - 8.8.8.8
+          - 10.55.103.249
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
