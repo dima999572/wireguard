@@ -5,12 +5,26 @@
     state: directory
     mode: '0755'
 
+- name: Create dummy SSL certificates if they don't exist
+  shell: |
+    mkdir -p /etc/letsencrypt/live/{{ domain_name }}/
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /etc/letsencrypt/live/{{ domain_name }}/privkey.pem \
+      -out /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem \
+      -subj "/CN={{ domain_name }}"
+  args:
+    creates: /etc/letsencrypt/live/{{ domain_name }}/privkey.pem
+  when: enable_nginx | default(false)
+
 - name: Render Docker Compose
   template:
     src: docker-compose.yml.j2
     dest: "{{ ts_stack_dir }}/docker-compose.yml"
   vars:
     ts_auth_key: "{{ ts_secrets.tailscale.auth_key }}"
+    # Add these variables to your group_vars
+    domain_name: "immich.yourdomain.com"
+    admin_email: "you@email.com"
 
 - name: Deploy and Start Tailscale
   community.docker.docker_compose_v2:
