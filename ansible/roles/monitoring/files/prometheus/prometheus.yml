@@ -60,7 +60,6 @@ scrape_configs:
       module: [dns]
     static_configs:
       - targets:
-          - 1.1.1.1
           - 8.8.8.8
     relabel_configs:
       - source_labels: [__address__]
@@ -69,3 +68,9 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox_exporter:9115
+
+  - job_name: mtr
+    scrape_interval: 15s
+    honor_timestamps: false
+    static_configs:
+      - targets: ["mtr-exporter:9116"]

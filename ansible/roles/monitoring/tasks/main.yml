@@ -34,6 +34,13 @@
     mode: '0644'
     directory_mode: '0755'
 
+- name: Copy MTR exporter jobs (static)
+  ansible.builtin.copy:
+    src: mtr/
+    dest: "{{ monitoring_stack_dir }}/mtr/"
+    mode: '0644'
+    directory_mode: '0755'
+
 - name: Render Docker Compose
   template:
     src: docker-compose.yml.j2

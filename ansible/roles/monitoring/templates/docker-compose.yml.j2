@@ -79,6 +79,22 @@ services:
     networks:
       - monitoring_net
 
+  mtr-exporter:
+    image: ghcr.io/mgumz/mtr-exporter:0.7.0
+    container_name: mtr_exporter
+    cap_add:
+      - NET_RAW
+    volumes:
+      - ./mtr/jobs:/etc/mtr-exporter/jobs:ro
+    command:
+      - -bind
+      - :9116
+      - -jobs
+      - /etc/mtr-exporter/jobs
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+
 
 volumes:
   prometheus_data:
