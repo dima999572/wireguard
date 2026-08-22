@@ -22,4 +22,8 @@ modules:
       transport_protocol: "udp"
       preferred_ip_protocol: "ip4"
       query_name: "google.com"
+      query_type: "A"
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - 'IN\s+A\s+[0-9.]+'
 
