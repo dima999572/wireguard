@@ -8,7 +8,7 @@ ansible_aws_ssm_bucket_name=${s3_bucket_name}
 vpn_endpoint=${vpn_endpoint}
 
 [raspberry]
-raspberry
+raspberrypi
 
 [raspberry:vars]
 ansible_connection=ssh
