@@ -31,3 +31,43 @@
     value: '1'
     state: present
     reload: true
+
+- name: Allow incoming traffic from Tailscale to be forwarded out (DOCKER-USER)
+  ansible.builtin.iptables:
+    chain: DOCKER-USER
+    in_interface: tailscale0
+    jump: ACCEPT
+    action: insert
+    rule_num: 1
+    comment: "Allow Tailscale exit node routing"
+
+- name: Allow return traffic back to Tailscale devices (DOCKER-USER)
+  ansible.builtin.iptables:
+    chain: DOCKER-USER
+    out_interface: tailscale0
+    ctstate:
+      - RELATED
+      - ESTABLISHED
+    jump: ACCEPT
+    action: insert
+    rule_num: 2
+    comment: "Allow Tailscale exit node return traffic"
+
+- name: Masquerade outgoing traffic to internet (NAT)
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: "{{ ansible_default_ipv4.interface }}"
+    jump: MASQUERADE
+    action: append
+    comment: "Masquerade all outbound WAN traffic including Tailscale"
+
+- name: Ensure iptables-persistent is installed so rules survive reboot (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: iptables-persistent
+    state: present
+    update_cache: yes
+
+- name: Save iptables rules to disk
+  ansible.builtin.command: netfilter-persistent save
+  changed_when: false
